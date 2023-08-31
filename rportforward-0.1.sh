@@ -77,7 +77,7 @@ BSD()
 Versao(){
   echo "
     Sou um programa feito na correria! hehe
-    Portanto, aponte melhorias para que sejam implementadas para a Infra Catarse...
+    Portanto, aponte melhorias para que sejam implementadas...
 
     Data criação: 31 de agosto de 2023
     Versão: 0.1
