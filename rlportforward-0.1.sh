@@ -27,8 +27,8 @@ Kill(){
     echo "Tchau...o/"
     exit 0
   else
-    echo ""
-    echo "Encontrado tunel ssh reverso! Matando geral... :)"
+    echo
+    echo "Encontrado tunel forward SSH e matando geral... :)"
     sleep 1
     echo ${tunnels} |xargs kill -9 
     echo "Finalizado todos os tuneis!!"
@@ -91,18 +91,13 @@ tuneis=$(ps -ef |grep -E "[[:space:]]ssh.*[RL]" |awk '{print $2}'|xargs)
 
 Local(){
 if [[ -z ${tuneis} ]]; then
-  
-  sleep 1
-  echo "."   
-  sleep 1
-  echo ".."
-  sleep 1
-  echo "..."
+
+  sleep 1; echo -n ". "; sleep 1; echo -n  ".. "; sleep 1; echo "..."
 
   if [[ -z "${ssh_user}"  ]]; then
     sleep 1
     echo ""
-    read -p 'Digite o nome do usuário: ' ssh_user
+    read -p 'Nome do usuário: ' ssh_user
     if [[ -z "${ssh_user}"  ]]; then
       echo ""
       echo "Ops!"
@@ -114,7 +109,7 @@ if [[ -z ${tuneis} ]]; then
   if [[ -z "${local_port}"  ]]; then
     echo ""
     sleep 1
-    read -p 'Agora digite a porta local TCP!É o listening socket da sua aplicação na sua máquina: ' local_port
+    read -p 'Porta TCP local!É o listening socket da sua aplicação na sua máquina: ' local_port
     echo ""
     if [[ -z "${local_port}"  ]]; then
       echo "Ops! ...o/"
@@ -127,7 +122,7 @@ if [[ -z ${tuneis} ]]; then
   if [[ -z "${remote_port}"  ]]; then
     echo ""
     sleep 1
-    read -p 'Agora digite a porta TCP para o listening socket no host remoto: ' remote_port
+    read -p 'Porta TCP remoto!Será o listening socket no host remoto: ' remote_port
     echo ""
     if [[ -z "${remote_port}"  ]]; then
       echo "Ops! ...o/"
@@ -140,7 +135,7 @@ if [[ -z ${tuneis} ]]; then
   if [[ -z "${ssh_host}"  ]]; then
     echo ""
     sleep 1
-    read -p 'Digite o endereço IP ou nome DNS do host remoto: ' ssh_host
+    read -p 'IP ou nome DNS do host remoto: ' ssh_host
     echo ""
     if [[ -z "${ssh_host}"  ]]; then
       echo "Ops! ...o/"
@@ -162,7 +157,7 @@ if [[ -z ${tuneis} ]]; then
 
 
   echo 
-  echo -e "Opa..o/ \n"
+  echo "Opa..o/"
   echo "Vou fazer forward da porta remota ${remote_port} em ${ssh_user}@${ssh_host} para a porta local 127.0.0.1:${local_port} da sua máquina"
   echo ""
   sleep 1
@@ -171,13 +166,12 @@ if [[ -z ${tuneis} ]]; then
   # criando tunel remoto e redirecionando porta remota para local
   ssh -nNT -L ${remote_port}:localhost:${local_port} ${ssh_user}@${ssh_host} &
   ssh_pid=$!
-  echo "Estou rodando como o processo de PID: ${ssh_pid}!"
   echo "Quando não precisar mais do túnel! Basta me executar com a opção '-k' que eu limpo tudo pra você!"
-  echo "Tchau...o/"
+  echo "...o/"
 else
   echo "Olha a treta!"
-  echo "Já existe túnel aberto!Mate o processo atual primeiro antes de abrir outro túnel..."
-  echo "Me execute novamente com a opção '-k'"
+  echo "Já existe túnel aberto!Feche-o antes de abrir outro túnel..."
+  echo "Execute-me novamente com a opção '-k'"
   exit 0
 fi
 }
@@ -191,7 +185,7 @@ if [[ -z ${tuneis} ]]; then
   if [[ -z "${ssh_user}"  ]]; then
     sleep 1
     echo ""
-    read -p 'Digite o nome do usuário: ' ssh_user
+    read -p 'Nome do usuário: ' ssh_user
     if [[ -z "${ssh_user}"  ]]; then
       echo ""
       echo "Ops!"
@@ -203,7 +197,7 @@ if [[ -z ${tuneis} ]]; then
   if [[ -z "${local_port}"  ]]; then
     sleep 1
     echo ""
-    read -p 'Agora digite a porta local TCP!É o listening socket da sua aplicação na sua máquina: ' local_port
+    read -p 'Porta TCP local!É o listening socket da sua aplicação na sua máquina: ' local_port
     if [[ -z "${local_port}"  ]]; then
       echo "Ops! ...o/"
       echo "Uma porta local é requerido!"
@@ -215,7 +209,7 @@ if [[ -z ${tuneis} ]]; then
   if [[ -z "${remote_port}"  ]]; then
     sleep 1
     echo ""
-    read -p 'Agora digite a porta TCP para o listening socket no host remoto: ' remote_port
+    read -p 'Porta TCP remoto! Será o listening socket no host remoto: ' remote_port
     if [[ -z "${remote_port}"  ]]; then
       echo "Ops! ...o/"
       echo "Um número de porta é requerido!"
@@ -227,7 +221,7 @@ if [[ -z ${tuneis} ]]; then
   if [[ -z "${ssh_host}"  ]]; then
     echo ""
     sleep 1
-    read -p 'Digite o endereço IP ou nome DNS do host remoto: ' ssh_host
+    read -p 'IP ou nome DNS do host remoto: ' ssh_host
     echo ""
     if [[ -z "${ssh_host}"  ]]; then
       echo "Ops! ...o/"
@@ -249,8 +243,8 @@ if [[ -z ${tuneis} ]]; then
 
 
   echo 
-  echo -e "Opa..o/ \n"
-  echo "Vou fazer forward da porta remota ${remote_port} em ${ssh_user}@${ssh_host} para a porta local 127.0.0.1:${local_port} da sua máquina"
+  echo "Opa..o/"
+  echo "Farei o SSH forward da porta remota ${remote_port} em ${ssh_user}@${ssh_host} para a porta local 127.0.0.1:${local_port} da sua máquina!"
   echo ""
   sleep 1
   read -n1 -rsp $'Pressione qualquer tecla pra continuar ou Ctrl+C pra sair dessa treta...\n'
@@ -258,13 +252,12 @@ if [[ -z ${tuneis} ]]; then
   # criando tunel remoto e redirecionando porta remota para local
   ssh -nNT -R ${remote_port}:localhost:${local_port} ${ssh_user}@${ssh_host} &
   ssh_pid=$!
-  echo "Estou rodando como o processo de PID: ${ssh_pid}!"
-  echo "Quando não precisar mais do túnel! Basta me executar com a opção '-k' que eu limpo tudo pra você!"
-  echo "Tchau...o/"
+  echo "Quando não precisar mais do túnel!Execute-me com a opção '-k', que eu limpo tudo pra você!"
+  echo "...o/"
 else
   echo "Olha a treta!"
-  echo "Já existe túnel aberto!Mate o processo atual primeiro antes de abrir outro túnel..."
-  echo "Me execute novamente com a opção '-k'"
+  echo "Já existe túnel aberto!Feche-o antes de abrir outro túnel."
+  echo "Execute-me novamente com a opção '-k'"
   exit 0
 fi
 }
