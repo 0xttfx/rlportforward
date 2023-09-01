@@ -3,7 +3,7 @@
 # versao: 0.1 | 31 de agosto de 2023 
 ##############################################
 
-Help()
+Ajuda()
 {
    # Display Help
    echo "Script para criação e gerencia de SSH Port Forward Local e Remoto!"
@@ -14,8 +14,8 @@ Help()
    echo "h     Mostra ajuda."
    echo "k     Mata túneis abertos."
    echo "v     Mostra a versão."
-   echo "R     Forward remoto - conexão com a porta TCP no host remoto será encaminhado para o host local"
-   echo "L     Forward local - conexão com a porta TCP local será encaminhado para host e porta no lado remoto"
+   echo "R     Forward remoto - conexão com a porta TCP no host remoto será encaminhado para o host e porta local."
+   echo "L     Forward local - conexão com a porta TCP local será encaminhado para porta e host remoto."
    echo
 }
 
@@ -93,10 +93,6 @@ Local(){
 if [[ -z ${tuneis} ]]; then
   
   sleep 1
-  echo ""
-  echo "Olá! ...o/" 
-  echo "Eu sou o script RPortForward"
-  echo "Se precisar de ajuda: me execute com a opção '-h'"
   echo "."   
   sleep 1
   echo ".."
@@ -190,16 +186,7 @@ fi
 Reverso(){
 if [[ -z ${tuneis} ]]; then
   
-  sleep 1
-  echo ""
-  echo "Olá! ...o/" 
-  echo "Eu sou o script RPortForward"
-  echo "Se precisar de ajuda: me execute com a opção '-h'"
-  echo "."   
-  sleep 1
-  echo ".."
-  sleep 1
-  echo "..."
+  sleep 1; echo -n ". "; sleep 1; echo -n  ".. "; sleep 1; echo "..."
 
   if [[ -z "${ssh_user}"  ]]; then
     sleep 1
@@ -214,10 +201,9 @@ if [[ -z ${tuneis} ]]; then
   fi
   
   if [[ -z "${local_port}"  ]]; then
-    echo ""
     sleep 1
-    read -p 'Agora digite a porta local TCP!É o listening socket da sua aplicação na sua máquina: ' local_port
     echo ""
+    read -p 'Agora digite a porta local TCP!É o listening socket da sua aplicação na sua máquina: ' local_port
     if [[ -z "${local_port}"  ]]; then
       echo "Ops! ...o/"
       echo "Uma porta local é requerido!"
@@ -227,10 +213,9 @@ if [[ -z ${tuneis} ]]; then
   fi
 
   if [[ -z "${remote_port}"  ]]; then
-    echo ""
     sleep 1
-    read -p 'Agora digite a porta TCP para o listening socket no host remoto: ' remote_port
     echo ""
+    read -p 'Agora digite a porta TCP para o listening socket no host remoto: ' remote_port
     if [[ -z "${remote_port}"  ]]; then
       echo "Ops! ...o/"
       echo "Um número de porta é requerido!"
@@ -287,8 +272,7 @@ fi
 if [ -z "$*" ]; then 
   sleep 1
   echo
-  echo "Sem argumentos declarados!"
-  echo "Execute-me novamente com a opção '-h'...o/"
+  Ajuda
   echo
   exit 1
 fi
@@ -298,7 +282,7 @@ fi
 while getopts ":hlvkLR" option; do
    case $option in
       h) # mostra Help
-         Help
+         Ajuda
          exit 0;;
       l) # mostra licença
          BSD
