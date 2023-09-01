@@ -20,7 +20,7 @@ Help()
 }
 
 Kill(){
-  tunnels=$(ps -ef |grep -E "[[:space:]]ssh.*R" |awk '{print $2}'|xargs) 
+  tunnels=$(ps -ef |grep -E "[[:space:]]ssh.*[RL]" |awk '{print $2}'|xargs) 
   if [ -z ${tunnels} ]; then
     sleep 1
     echo "Não há túnel reverso ssh aberto!"
@@ -87,7 +87,7 @@ Versao(){
 
 
 # verificando tuneis ativos
-tuneis=$(ps -ef |grep -E "[[:space:]]ssh.*R" |awk '{print $2}'|xargs)
+tuneis=$(ps -ef |grep -E "[[:space:]]ssh.*[RL]" |awk '{print $2}'|xargs)
 
 Local(){
 if [[ -z ${tuneis} ]]; then
