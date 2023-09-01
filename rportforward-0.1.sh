@@ -3,19 +3,20 @@
 # versao: 0.1 | 31 de agosto de 2023 
 ##############################################
 
-
 Help()
 {
-  # Display Help
-  echo "Script para encaminhamento de porta sem servidor remoto para máquina local"
-  echo
-  echo "sintaxe: rportforward [-l|h|v|k]"
-  echo "opções:"
-  echo "l     Mostra licença."
-  echo "h     Mostra ajuda."
-  echo "k     Mata túneis abertos."
-  echo "v     Mostra a versão."
-  echo
+   # Display Help
+   echo "Script para criação e gerencia de SSH Port Forward Local e Remoto!"
+   echo
+   echo "sintaxe: rportforward [-l|h|v|k]"
+   echo "opções:"
+   echo "l     Mostra licença."
+   echo "h     Mostra ajuda."
+   echo "k     Mata túneis abertos."
+   echo "v     Mostra a versão."
+   echo "R     Forward remoto - conexão com a porta TCP no host remoto será encaminhado para o host local"
+   echo "L     Forward local - conexão com a porta TCP local será encaminhado para host e porta no lado remoto"
+   echo
 }
 
 Kill(){
@@ -84,31 +85,109 @@ Versao(){
     "
 }
 
-# opções
-###############################################################################
-while getopts ":hlvk" option; do
-   case $option in
-      h) # mostra Help
-         Help
-         exit 0;;
-      l) # mostra licença
-	 BSD
-	 exit 0;;
-      k) # kilando tuneis reversos ssh
-	 Kill
-	 exit 0;;
-      v) # Versão
-	 Versao
-	 exit 0;;
-      \?) # incorrect option
-         echo "Erro: Opção inválida"
-         exit 1;;
-   esac
-done
 
 # verificando tuneis ativos
 tuneis=$(ps -ef |grep -E "[[:space:]]ssh.*R" |awk '{print $2}'|xargs)
 
+Local(){
+if [[ -z ${tuneis} ]]; then
+  
+  sleep 1
+  echo ""
+  echo "Olá! ...o/" 
+  echo "Eu sou o script RPortForward"
+  echo "Se precisar de ajuda: me execute com a opção '-h'"
+  echo "."   
+  sleep 1
+  echo ".."
+  sleep 1
+  echo "..."
+
+  if [[ -z "${ssh_user}"  ]]; then
+    sleep 1
+    echo ""
+    read -p 'Digite o nome do usuário: ' ssh_user
+    if [[ -z "${ssh_user}"  ]]; then
+      echo ""
+      echo "Ops!"
+      echo "Um nome de usuário é requerido!"
+      exit 1
+    fi
+  fi
+  
+  if [[ -z "${local_port}"  ]]; then
+    echo ""
+    sleep 1
+    read -p 'Agora digite a porta local TCP!É o listening socket da sua aplicação na sua máquina: ' local_port
+    echo ""
+    if [[ -z "${local_port}"  ]]; then
+      echo "Ops! ...o/"
+      echo "Uma porta local é requerido!"
+      echo ""
+      exit 1
+    fi
+  fi
+
+  if [[ -z "${remote_port}"  ]]; then
+    echo ""
+    sleep 1
+    read -p 'Agora digite a porta TCP para o listening socket no host remoto: ' remote_port
+    echo ""
+    if [[ -z "${remote_port}"  ]]; then
+      echo "Ops! ...o/"
+      echo "Um número de porta é requerido!"
+      echo ""
+      exit 1
+    fi
+  fi
+
+  if [[ -z "${ssh_host}"  ]]; then
+    echo ""
+    sleep 1
+    read -p 'Digite o endereço IP ou nome DNS do host remoto: ' ssh_host
+    echo ""
+    if [[ -z "${ssh_host}"  ]]; then
+      echo "Ops! ...o/"
+      echo "Endereço de host é requerido!"
+      echo ""
+      exit 1
+    fi
+  fi
+
+
+  ssh_user=$(echo ${ssh_user})
+  # set your host name here
+  ssh_host=$(echo ${ssh_host})
+  # set the local port to map
+  local_port=$(echo ${local_port})
+  # set the remote port to map
+  remote_port=$(echo ${remote_port})
+
+
+
+  echo 
+  echo -e "Opa..o/ \n"
+  echo "Vou fazer forward da porta remota ${remote_port} em ${ssh_user}@${ssh_host} para a porta local 127.0.0.1:${local_port} da sua máquina"
+  echo ""
+  sleep 1
+  read -n1 -rsp $'Pressione qualquer tecla pra continuar ou Ctrl+C pra sair dessa treta...\n'
+
+  # criando tunel remoto e redirecionando porta remota para local
+  ssh -nNT -L ${remote_port}:localhost:${local_port} ${ssh_user}@${ssh_host} &
+  ssh_pid=$!
+  echo "Estou rodando como o processo de PID: ${ssh_pid}!"
+  echo "Quando não precisar mais do túnel! Basta me executar com a opção '-k' que eu limpo tudo pra você!"
+  echo "Tchau...o/"
+else
+  echo "Olha a treta!"
+  echo "Já existe túnel aberto!Mate o processo atual primeiro antes de abrir outro túnel..."
+  echo "Me execute novamente com a opção '-k'"
+  exit 0
+fi
+}
+
+
+Reverso(){
 if [[ -z ${tuneis} ]]; then
   
   sleep 1
@@ -203,4 +282,42 @@ else
   echo "Me execute novamente com a opção '-k'"
   exit 0
 fi
+}
+
+if [ -z "$*" ]; then 
+  sleep 1
+  echo
+  echo "Sem argumentos declarados!"
+  echo "Execute-me novamente com a opção '-h'...o/"
+  echo
+  exit 1
+fi
+
+# Lendo opções
+###############################################################################
+while getopts ":hlvkLR" option; do
+   case $option in
+      h) # mostra Help
+         Help
+         exit 0;;
+      l) # mostra licença
+         BSD
+         exit 0;;
+      k) # kilando tuneis reversos ssh
+         Kill
+         exit 0;;
+      v) # Versão
+         Versao
+         exit 0;;
+      R) # Túnel reverso
+         Reverso
+         exit 0;;
+      L) # Tunel local
+         Local
+         exit 0;;
+      \?) # incorrect option
+         echo "Error: Opção inválida"
+         exit 1;;
+   esac
+done
 
